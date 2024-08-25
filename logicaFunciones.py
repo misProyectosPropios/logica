@@ -263,3 +263,32 @@ def convertirNumeroDecimalEnBinario(num: int, cantidad_bits: int) -> str:
             cuanto_falta_para_llenar_bits = cantidad_bits - len(res)
             res = "0" * cuanto_falta_para_llenar_bits + res 
     return res
+
+def separarStringEnFormula(formula_string: str) -> list[str]:
+    formula_separada_por_espacio: list[str] = formula_string.split()
+    res: list[str] = []
+    string: str = ""
+    for index in formula_separada_por_espacio:
+        separados = sacarNegacionYParentesis(index)
+        for i in separados:
+            res.append(i)        
+    return res
+
+def sacarNegacionYParentesis(string: str) -> list[str]:
+    res: list[str] = []
+    era_operacion: bool = False
+    for i in range(len(string)):
+        if (esNegacion(string[i]) or esParentesisAbierto(string[i]) or esParentesisCerrado(string[i])):
+            res.append(string[i])
+            era_operacion = True
+        else:
+            if (era_operacion):
+                res.append(string[i])
+                era_operacion = False
+            else:
+                if (len(res) == 0):
+                    res.append(string[i])
+                else:
+                    res[len(res) - 1] += string[i] 
+                
+    return res
