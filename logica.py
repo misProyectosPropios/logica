@@ -28,3 +28,7 @@ def esMasFuerteQue(formula_a_ver_si_es_mas_fuerte: str, formula_para_comparar: s
         formula_de_fuerza.append(i)
     formula_de_fuerza.append(")")
     return logicaFunciones.esTautologia(formula_de_fuerza, True)
+formula = "(-A AND B AND C) OR (A AND -B AND C) OR (A AND B AND -C) OR (A AND B AND C)"
+formula_simplificada = "(C AND ((B AND -A) OR (A AND -B))) OR (A AND ((B AND -C) OR (B AND C)))"
+formula_valor = "(B AND -A) OR (A AND -B))"
+evaluarFormula(formula_simplificada)

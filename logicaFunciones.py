@@ -107,12 +107,12 @@ def buscarFormulaMasBasica(s: list[str]):
     res: list[str] = []
     dentroDeParentesis: bool = False
     for i in s:
-        if (esParentesisAbierto(i)):
+        if (dentroDeParentesis and esParentesisAbierto(i)):
+            res = []
+        elif (esParentesisAbierto(i)):
             dentroDeParentesis = True
         elif (esParentesisCerrado(i)):
             return res
-        elif (dentroDeParentesis and esParentesisAbierto(i)):
-            res = []
         elif (dentroDeParentesis):
             res.append(i)
     return res
@@ -126,6 +126,7 @@ def reemplazarFormulaMasBasica(s: list[str], valorDeLaFormula: bool) -> list[str
     yaSeReemplazo: bool = False
     almacenDeFormulas: list[str] = []
     dentroDeParentesis: bool = False
+    anterior_es_parentesis: bool = False
     for i in s:
         if (yaSeReemplazo):
             res.append(i)
@@ -133,16 +134,23 @@ def reemplazarFormulaMasBasica(s: list[str], valorDeLaFormula: bool) -> list[str
             if (len(almacenDeFormulas) != 0 and dentroDeParentesis):
                 res.append("(")
                 appendListOfStringsToListOfStrings(res, almacenDeFormulas)
-                res.append(almacenDeFormulas)
-            if (len(almacenDeFormulas) != 0):
+                anterior_es_parentesis = False
+            elif (len(almacenDeFormulas) != 0):
                 appendListOfStringsToListOfStrings(res, almacenDeFormulas)
+                anterior_es_parentesis = False
+            elif (anterior_es_parentesis):
+                res.append("(")
+                anterior_es_parentesis = False
             almacenDeFormulas = []
             dentroDeParentesis = True
+            anterior_es_parentesis = True
         elif (esParentesisCerrado(i)):
             res.append(valorDeLaFormula)
             yaSeReemplazo = True
             almacenDeFormulas = []
+            anterior_es_parentesis = False
         else:
+            anterior_es_parentesis = False
             almacenDeFormulas.append(i)
         
     return res
@@ -151,7 +159,10 @@ def resolverFormula(s: list[str]):
     formula: list[str]
     
     while (hayParentesis(s)):
-        s = reemplazarFormulaMasBasica(s, str(valorLogicoFormualaBasica(buscarFormulaMasBasica(s))))
+        formula_mas_basica = buscarFormulaMasBasica(s)
+        valor_de_formula_mas_basica = str(valorLogicoFormualaBasica(formula_mas_basica))
+
+        s = reemplazarFormulaMasBasica(s, valor_de_formula_mas_basica)
         #resolverFormulasMasBasicas(s)
     return valorLogicoFormualaBasica(s)
 
@@ -219,6 +230,7 @@ def evaluarConTodasLasPosibilidades(formulaConVariables: list[str]):
         for index in range(len(numero_en_binario)):
             diccionario_variables[variables_array[index]] = convertir1y0EnTrueYFalse(numero_en_binario[index])
         printValorVariables(numero_en_binario)
+
         print(evaluarFormulaConVariablesEnCiertaAsignacion(formulaConVariables, diccionario_variables))
     return
 
@@ -292,3 +304,9 @@ def sacarNegacionYParentesis(string: str) -> list[str]:
                     res[len(res) - 1] += string[i] 
                 
     return res
+formula_simplificada = "(-False AND False AND False) OR (False AND -False AND False)"
+formula_simplificada = "(False AND False AND -False) OR (False AND False AND False)"
+#evaluarFormula(formula_simplificada)
+formula_simplificada = separarStringEnFormula(formula_simplificada)
+print(formula_simplificada)
+print(resolverFormula(formula_simplificada))
